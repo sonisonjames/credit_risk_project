@@ -1,0 +1,83 @@
+Margin Period of Risk:
+~~~~~~~~~~~~~~~~~~~~~~~
+Even with daily margin call frequency, there is a significant delay δ t , known as the margin period of risk (MPR), 
+between a margin call that the counterparty does not respond to and the closeout/replacement of the portfolio if 
+the counterparty defaults.
+  – Margin calls can be disputed, and it may take several days for the bank
+    to realize that the counterparty is defaulting rather than disputing the call
+  – There is a grace period after the bank issues notice of default.
+    During this grace period the counterparty may still post collateral
+  – It may take time to close out and replace complex trades
+
+While δ t is not known with certainty, it is usually assumed to be a fixed number, specified at the margin agreement level.
+– Assumed value of δ t depends on margin call frequency and trade liquidity
+– Typical assumption for daily calls and liquid trades is δ t = 2 weeks(DEFAULT MPR 10 days)
+
+Including MPR in the Model:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Suppose that at time t − δ t we have collateral C(t − δ t) and portfolio value is V(t − δ t)
+  Then, the amount ΔC(t) that should be posted by time t is
+    ΔC (t ) = max {V (t −δ t ) − C (t −δ t ) − cptyThreshold, −C(t −δ t )}
+    Negative ΔC(t) means that collateral will be returned
+
+  Collateral C(t) available at time t is
+    C (t ) = C (t − δ t ) + ΔC (t ) = max {V (t − δ t ) − cptyThreshold ,0}
+
+  For comparison, collateral under the “naive” model is
+    C_naive (t ) = max {V (t ) − cptyThreshold ,0}
+
+  Thus, to determine collateralized exposure at time t ,
+  we need to simulate portfolio value both at t − δ t and at t .
+
+MPR calc is driven by various measures
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Collateral disputes.
+Hard to replace
+Liquity of underlying assets
+etc..
+
+We can look to pick one of the measure, which is Liquidity of the underlying assets.
+This is something that has been picked recently by requlators and the banks have looked to implement it into their models.
+
+As part of latest Basel-3 requirement Trades secured with posted collaterals or an OTC derivative that cannot be easily replaced, a supervisory floor of 20 business daysis imposed for margin period of risk.
+The Objective is to identify all Held collaterals(with its underlying securities) and tag them as illiquid / Liquid based on a defined classification criteria.
+The reason to follow this exersice is in situations where trades are deemed illiquid but are not marked daily and are subjected to specific accounting treatment for valuation 
+purpose.
+eg: OTC or REPO transactions referencing securities whose fair value is determined by models with inputs that are not observed in the market.
+
+For our presentation we can look to cover the following products.
+-OTC derivative trades
+-REPO (repurchase order)
+-Stock Lend Borrow
+-Central cleared counterparty trades(Exchange trades futures and options)
+
+The Liquid collateral/Trades can be categorised under.
+-Cash
+-US govt or Agency securities
+-G7 and Swiss Govt securities
+-Corporate Bonds (-Investment grade US corporate)
+				  -Issue(or underlying security rating(Moody, Fitch, SNP) to be considered)
+				  -In case of unavailablity of information a defaulting Issuer rating rule applies in categorisation.
+-Equity (-will take the exchanges its been trades.
+		 -Presence on major indices.
+		 -Also consider Held Value of Quity and the Trading Volume.
+		 )
+
+Once all securities are tagged as discussed above.
+
+We will have to look at a portfolio, which comprises of the following identifiers.
+ie Counterparty + BookingEntity(a banks booking center regionally) + Products(Asset classes) + NettingAgreements(used to net positions, based on a ISDA or legal aggreements)
+Lets call them Business area(BA).
+Now if under one of underlying security in the trades process for exposure calculation in a BA has Illiquid securities.
+The holding periods used in the expsore calculation will be marked to 20 days of supervisory MarginPeriodOfRisk(MPR).
+For BA's with only Liquid assets will NOT receive MPR floor of 20 in the calculation.
+
+As an example:
+MPR is one of the key parameters in the Exposure calc along with other details confidence-level, stress period window, etc along with the Market factors linked to each trades under each BA(portfolio).
+we can even show a BA expsoure calculation data set, with Trades/Sensitivities/HoldingPeriod(20 and non-20) 
+and see the difference in exposure calculated.
+
+This exposure number(PotentionalExposure or EffectiveExposure) is inturn used to drive the RiskWeightedAsset
+Which is the amount of capital  reserve a financial institution needs to hold.
+
+These exposure number also constitutes to the EAD(exposure at default) calculated against each counterparty.
